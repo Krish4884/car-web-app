@@ -27,7 +27,7 @@ car-web-app
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/car-web-app.git
+git clone https://github.com/sparknet-innovations/car-web-app.git
 cd car-web-app
 ````
 
