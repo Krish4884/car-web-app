@@ -47,4 +47,3 @@ http://localhost:3000
 - Fully responsive layout
 - Multi-page navigation
 - Simple Node.js backend using Express
-```
