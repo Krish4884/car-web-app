@@ -7,7 +7,7 @@ A beautifully styled multi-page static web app built with HTML, CSS, and JavaScr
 ## 📁 Project Structure
 
 ```
-luxury-car-showcase/
+car-web-app
 ├── public/
 │   ├── index.html
 │   ├── about.html
