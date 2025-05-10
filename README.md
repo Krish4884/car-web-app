@@ -7,6 +7,7 @@ A beautifully styled multi-page static web app built with HTML, CSS, and JavaScr
 ## 📁 Project Structure
 
 ```
+
 car-web-app
 ├── public/
 │   ├── index.html
@@ -17,23 +18,32 @@ car-web-app
 ├── server.js
 ├── package.json
 └── README.md
-```
+
+````
 
 ---
 
 ## 🚀 Run Locally
 
-### 1. Install Dependencies
+### 1. Clone the Repository
+```bash
+git clone https://github.com/your-username/car-web-app.git
+cd car-web-app
+````
+
+### 2. Install Dependencies
+
 ```bash
 npm install
 ```
 
-### 2. Start Server
+### 3. Start Server
+
 ```bash
 npm start
 ```
 
-Open your browser and visit:
+Then open your browser and visit:
 
 ```
 http://localhost:3000
@@ -43,7 +53,7 @@ http://localhost:3000
 
 ## ✨ Features
 
-- Clean, modern design
-- Fully responsive layout
-- Multi-page navigation
-- Simple Node.js backend using Express
+* Clean, modern design
+* Fully responsive layout
+* Multi-page navigation
+* Simple Node.js backend using Express
