@@ -48,5 +48,3 @@ http://localhost:3000
 - Multi-page navigation
 - Simple Node.js backend using Express
 ```
-
-
