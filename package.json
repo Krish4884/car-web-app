@@ -1,0 +1,13 @@
+{
+    "name": "luxury-car-showcase",
+    "version": "1.0.0",
+    "description": "A stylish static luxury car showcase with HTML/CSS/JS",
+    "main": "server.js",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "dependencies": {
+      "express": "^4.18.3"
+    }
+  }
+  

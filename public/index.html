@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Luxury Car Showcase</title>
+  <link rel="stylesheet" href="./css/style.css" />
+  <style>
+    /* Additional styles for enhancements */
+    .hero {
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), 
+                  url('https://images.unsplash.com/photo-1601924928373-3c36c9f3a8f8?w=1920&auto=format&fit=crop&q=80') no-repeat center center/cover;
+      color: #fff;
+      padding: 6rem 2rem;
+      text-align: center;
+    }
+    .hero h2 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .hero .cta-button {
+      background-color: #fa37ac;
+      color: #fff;
+      padding: 0.8rem 2rem;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .hero .cta-button:hover {
+      background-color: #f655b6;
+    }
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .social-icons a {
+      color: #fff;
+      font-size: 1.5rem;
+      transition: color 0.3s ease;
+    }
+    .social-icons a:hover {
+      color: #ff4500;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Elite Cars</h1>
+    <nav>
+      <a href="index.html" class="active">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Experience Ultimate Luxury</h2>
+    <p>Discover the finest cars in the world</p>
+    <button class="cta-button">Explore Now</button>
+  </section>
+
+  <section class="cars">
+    <div class="car-card">
+      <img src="https://images.unsplash.com/photo-1618846446712-a4eda2adc05f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bGFtYm9yZ2hpbmklMjBhdmVudGFkb3J8ZW58MHx8MHx8fDA%3D" alt="Lamborghini Aventador" />
+      <h3>Lamborghini Aventador</h3>
+      <p>V12-powered speed machine.</p>
+    </div>
+    <div class="car-card">
+      <img src="https://images.unsplash.com/photo-1728458664292-ac6d6034e78d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fFJvbGxzJTIwUm95Y2UlMjBQaGFudG9tfGVufDB8fDB8fHww" alt="Rolls-Royce Phantom" />
+      <h3>Rolls-Royce Phantom</h3>
+      <p>Elegance in motion with handcrafted luxury.</p>
+    </div>
+    <div class="car-card">
+      <img src="https://images.unsplash.com/photo-1609138315745-4e44ac3bbd8d?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Ferrari SF90" />
+      <h3>Ferrari SF90</h3>
+      <p>Hybrid innovation meets raw performance.</p>
+    </div>
+    <div class="car-card">
+      <img src="https://images.unsplash.com/photo-1471289549423-04adaecfa1f1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8QmVudGxleSUyMENvbnRpbmVudGFsJTIwR1R8ZW58MHx8MHx8fDA%3D" alt="Bentley Continental GT" />
+      <h3>Bentley Continental GT</h3>
+      <p>Handcrafted elegance with grand touring power.</p>
+    </div>
+    <div class="car-card">
+      <img src="https://images.unsplash.com/photo-1691025255410-299036c9b0fd?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Aston Martin DB11" />
+      <h3>Aston Martin DB11</h3>
+      <p>Iconic design meets exhilarating performance.</p>
+    </div>
+    <div class="car-card">
+      <img src="https://images.unsplash.com/photo-1627454820516-dc767bcb4d3e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8QnVnYXR0aSUyMENoaXJvbnxlbnwwfHwwfHx8MA%3D%3D" alt="Bugatti Chiron" />
+      <h3>Bugatti Chiron</h3>
+      <p>Unmatched speed and engineering marvel.</p>
+    </div>
+  </section>
+
+  <section class="page-content">
+    <h2>About Us</h2>
+    <p>Elite Cars curates and showcases the world's most luxurious and powerful vehicles. From precision-engineered Italian supercars to the elegant craftsmanship of British motorcars, we bring passion to life on wheels.</p>
+    <p>Founded in 2010, Elite Cars has established itself as a trusted name in the luxury automotive industry. Our mission is to connect car enthusiasts with the most exclusive and high-performance vehicles available, offering a seamless and personalized experience.</p>
+    <p>We pride ourselves on our commitment to excellence, ensuring that every vehicle in our collection meets the highest standards of quality, design, and innovation. Whether you're looking for a rare collector's item or the latest in automotive technology, Elite Cars is your destination for unparalleled luxury.</p>
+    <p>Our team of experts is dedicated to providing exceptional service, from helping you choose the perfect car to offering tailored financing and after-sales support. At Elite Cars, we don't just sell cars—we deliver dreams on wheels.</p>
+  </section>
+
+
+    <section class="page-content">
+    <h2>Contact Us</h2>
+    <p>Email: contact@elitecars.com</p>
+    <p>Phone: +1 (800) 123-4567</p>
+    <p>Address: 123 Luxury Blvd, Auto City, EX 45678</p>
+  </section>
+
+  <footer>
+    <p>© 2025 Elite Cars. All rights reserved.</p>
+    <div class="social-icons">
+      <a href="#"><i class="fab fa-facebook"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+    </div>
+  </footer>
+
+  <!-- Add Font Awesome for social icons -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>
