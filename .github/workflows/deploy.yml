@@ -1,4 +1,4 @@
-name: Build and Push Docker Image to ECR
+name: Build, Push & Deploy
 
 on:
   push:
@@ -22,11 +22,22 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-south-1
 
-    - name: Log in to Amazon ECR
+    - name: Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build Docker Image
+    - name: Build Docker image
       run: docker build -t 084828567677.dkr.ecr.ap-south-1.amazonaws.com/car-web-app:latest .
 
-    - name: Push to Amazon ECR
+    - name: Push Docker image to ECR
       run: docker push 084828567677.dkr.ecr.ap-south-1.amazonaws.com/car-web-app:latest
+
+    - name: Deploy on EC2 via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
+        script: |
+          docker pull 084828567677.dkr.ecr.ap-south-1.amazonaws.com/car-web-app:latest
+          docker stop $(docker ps -q) || true
+          docker run -d -p 3000:3000 084828567677.dkr.ecr.ap-south-1.amazonaws.com/car-web-app:latest
