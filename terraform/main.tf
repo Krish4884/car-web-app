@@ -135,20 +135,19 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy_attach_cni" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.eks_node_role.name
 }
-# terraform/main.tf (append this to your existing content)
 
-# --- EKS Cluster ---
+# --- EKS Cluster (configured to match your existing cluster) ---
 
 resource "aws_eks_cluster" "main" {
-  name     = "${var.project_name}-cluster"
+  name     = "luxury-car-eks" # <-- Set to your existing cluster's name
   role_arn = aws_iam_role.eks_cluster_role.arn
-  version  = "1.28" # Specify your desired Kubernetes version (e.g., "1.28", "1.29")
+  version  = "1.32"             # <-- Set to your existing cluster's version
 
   vpc_config {
     subnet_ids         = concat(aws_subnet.public.*.id, aws_subnet.private.*.id)
     endpoint_private_access = true
     endpoint_public_access  = true
-    public_access_cidrs = ["0.0.0.0/0"] # Be cautious: this allows public access from anywhere. Restrict in production.
+    public_access_cidrs = ["0.0.0.0/0"]
   }
 
   depends_on = [
@@ -156,20 +155,20 @@ resource "aws_eks_cluster" "main" {
   ]
 
   tags = {
-    Name = "${var.project_name}-eks-cluster"
+    Name = "luxury-car-eks" # <-- Update this tag to match your existing cluster name
   }
 }
 
-# --- EKS Node Group ---
+# --- EKS Node Group (for your existing cluster) ---
 
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
-  node_group_name = "${var.project_name}-node-group"
+  node_group_name = "${var.project_name}-node-group" # This name is flexible, can be kept as is or matched if desired
   node_role_arn   = aws_iam_role.eks_node_role.arn
   subnet_ids      = aws_subnet.private.*.id # Typically, worker nodes are in private subnets
 
   capacity_type  = "ON_DEMAND"
-  instance_types = ["t3.medium"] # Choose an instance type that fits your needs
+  instance_types = ["t3.medium"] # Adjust instance type if your existing nodes are different (e.g., t3.small, t3.large as seen in your screenshot)
   desired_size   = 2             # Number of worker nodes
   max_size       = 3
   min_size       = 1
@@ -186,7 +185,6 @@ resource "aws_eks_node_group" "main" {
     max_unavailable = 1
   }
 
-  # Ensure that IAM Role permissions are created before and attached to the EKS Node Group.
   depends_on = [
     aws_iam_role_policy_attachment.eks_node_policy_attach_worker,
     aws_iam_role_policy_attachment.eks_node_policy_attach_ecr,
@@ -194,7 +192,7 @@ resource "aws_eks_node_group" "main" {
   ]
 
   tags = {
-    Name = "${var.project_name}-eks-node-group"
-    "kubernetes.io/cluster/${aws_eks_cluster.main.name}" = "owned" # Required for cluster auto-scaling
+    Name = "${var.project_name}-eks-node-group" # Update this tag if your existing node group has a specific name tag
+    "kubernetes.io/cluster/${aws_eks_cluster.main.name}" = "owned"
   }
 }
