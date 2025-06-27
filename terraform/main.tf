@@ -1,4 +1,4 @@
-# terraform/main.tf (append to existing content)
+# terraform/main.tf
 
 # Configure AWS Provider
 provider "aws" {
@@ -9,7 +9,7 @@ provider "aws" {
 
 # VPC
 resource "aws_vpc" "main" {
-  cidr_block = var.vpc_cidr_block
+  cidr_block           = var.vpc_cidr_block
   enable_dns_hostnames = true
   tags = {
     Name = "${var.project_name}-vpc"
@@ -24,27 +24,32 @@ resource "aws_internet_gateway" "main" {
   }
 }
 
+# Data source to get available AZs for the region
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 # Public Subnets
 resource "aws_subnet" "public" {
-  count             = length(var.public_subnet_cidr_blocks)
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.public_subnet_cidr_blocks[count.index]
+  count                   = length(var.public_subnet_cidr_blocks)
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet_cidr_blocks[count.index]
   map_public_ip_on_launch = true # Instances in public subnet get public IPs
-  availability_zone = data.aws_availability_zones.available.names[count.index]
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
   tags = {
-    Name = "${var.project_name}-public-subnet-${count.index + 1}"
+    Name                     = "${var.project_name}-public-subnet-${count.index + 1}"
     "kubernetes.io/role/elb" = "1" # Tag for Kubernetes Load Balancer
   }
 }
 
 # Private Subnets
 resource "aws_subnet" "private" {
-  count             = length(var.private_subnet_cidr_blocks)
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_subnet_cidr_blocks[count.index]
-  availability_zone = data.aws_availability_zones.available.names[count.index]
+  count               = length(var.private_subnet_cidr_blocks)
+  vpc_id              = aws_vpc.main.id
+  cidr_block          = var.private_subnet_cidr_blocks[count.index]
+  availability_zone   = data.aws_availability_zones.available.names[count.index]
   tags = {
-    Name = "${var.project_name}-private-subnet-${count.index + 1}"
+    Name                          = "${var.project_name}-private-subnet-${count.index + 1}"
     "kubernetes.io/role/internal-elb" = "1" # Tag for Kubernetes Internal Load Balancer
   }
 }
@@ -68,7 +73,65 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
 }
 
-# Data source to get available AZs for the region
-data "aws_availability_zones" "available" {
-  state = "available"
+# --- IAM Roles for EKS ---
+
+# IAM Role for EKS Cluster Control Plane
+resource "aws_iam_role" "eks_cluster_role" {
+  name = "${var.project_name}-eks-cluster-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "eks.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# Attach AmazonEKSClusterPolicy to the EKS Cluster Role
+resource "aws_iam_role_policy_attachment" "eks_cluster_policy_attach" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.eks_cluster_role.name
+}
+
+
+# IAM Role for EKS Node Group (Worker Nodes)
+resource "aws_iam_role" "eks_node_role" {
+  name = "${var.project_name}-eks-node-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# Attach AmazonEKSWorkerNodePolicy to the EKS Node Role
+resource "aws_iam_role_policy_attachment" "eks_node_policy_attach_worker" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.eks_node_role.name
+}
+
+# Attach AmazonEC2ContainerRegistryReadOnly to the EKS Node Role (for pulling ECR images)
+resource "aws_iam_role_policy_attachment" "eks_node_policy_attach_ecr" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.eks_node_role.name
+}
+
+# Attach AmazonEKS_CNI_Policy to the EKS Node Role (for network interface)
+resource "aws_iam_role_policy_attachment" "eks_node_policy_attach_cni" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.eks_node_role.name
 }
