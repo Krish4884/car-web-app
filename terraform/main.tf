@@ -143,6 +143,16 @@ resource "aws_eks_cluster" "main" {
   role_arn = aws_iam_role.eks_cluster_role.arn
   version  = "1.32"             # <-- Set to your existing cluster's version
 
+  # --- ADDED FOR CONTROL PLANE LOGGING ---
+  enabled_cluster_log_types = [
+    "api",
+    "audit",
+    "authenticator",
+    "controllerManager",
+    "scheduler"
+  ]
+  # --- END OF ADDITION ---
+
   vpc_config {
     subnet_ids         = concat(aws_subnet.public.*.id, aws_subnet.private.*.id)
     endpoint_private_access = true
@@ -163,23 +173,21 @@ resource "aws_eks_cluster" "main" {
 
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
-  node_group_name = "${var.project_name}-node-group" # This name is flexible, can be kept as is or matched if desired
+  node_group_name = "${var.project_name}-node-group"
   node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = aws_subnet.private.*.id # Typically, worker nodes are in private subnets
+  subnet_ids      = aws_subnet.private.*.id
 
   capacity_type  = "ON_DEMAND"
-  instance_types = ["t3.medium"] # Adjust instance type if your existing nodes are different (e.g., t3.small, t3.large as seen in your screenshot)
-  desired_size   = 2             # Number of worker nodes
-  max_size       = 3
-  min_size       = 1
+  instance_types = ["t3.medium"] # Adjust instance type if your existing nodes are different
 
-  ami_type       = "AL2_x86_64" # Amazon Linux 2 (recommended for EKS)
-
+  # The desired_size, max_size, and min_size are now correctly nested within scaling_config
   scaling_config {
     desired_size = 2
     max_size     = 3
     min_size     = 1
   }
+
+  ami_type       = "AL2_x86_64" # Amazon Linux 2 (recommended for EKS)
 
   update_config {
     max_unavailable = 1
@@ -192,7 +200,7 @@ resource "aws_eks_node_group" "main" {
   ]
 
   tags = {
-    Name = "${var.project_name}-eks-node-group" # Update this tag if your existing node group has a specific name tag
+    Name = "${var.project_name}-eks-node-group"
     "kubernetes.io/cluster/${aws_eks_cluster.main.name}" = "owned"
   }
 }

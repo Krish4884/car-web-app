@@ -1,18 +1,19 @@
-# Stage 1: Build the React/Vite application
-FROM node:18-alpine AS builder
+# Use official Node.js image
+FROM node:18-alpine
+
+# Set working directory
 WORKDIR /app
+
+# Copy package.json and install dependencies
 COPY package*.json ./
 RUN npm install
-COPY . .
-RUN npm run build
 
-# Stage 2: Serve the application with Nginx
-FROM nginx:alpine
-# Copy the custom Nginx configuration for SPA routing
-COPY nginx.conf /etc/nginx/nginx.conf
-# Copy the built application from the builder stage to Nginx's HTML directory
-COPY --from=builder /app/dist /usr/share/nginx/html
-# Expose port 80 for web traffic
-EXPOSE 80
-# Command to start Nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]
+# Copy the rest of the code
+COPY . .
+
+# Expose the port used by the Node.js app
+EXPOSE 3000
+
+# Start the server
+CMD ["node", "server.js"]
+
