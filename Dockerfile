@@ -1,22 +1,18 @@
-# Use Node.js image for building the frontend
+# Stage 1: Build the React/Vite application
 FROM node:18-alpine AS builder
-
 WORKDIR /app
-
-# Copy package.json and install dependencies
 COPY package*.json ./
 RUN npm install
-
-# Copy the rest of the app and build it
 COPY . .
 RUN npm run build
 
-# Use nginx to serve the static files
+# Stage 2: Serve the application with Nginx
 FROM nginx:alpine
-
-# Copy the build output to Nginx HTML directory
+# Copy the custom Nginx configuration for SPA routing
+COPY nginx.conf /etc/nginx/nginx.conf
+# Copy the built application from the builder stage to Nginx's HTML directory
 COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy a custom nginx config if needed
+# Expose port 80 for web traffic
 EXPOSE 80
+# Command to start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
