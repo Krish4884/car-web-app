@@ -1,13 +1,17 @@
 {
-    "name": "luxury-car-showcase",
-    "version": "1.0.0",
-    "description": "A stylish static luxury car showcase with HTML/CSS/JS",
-    "main": "server.js",
-    "scripts": {
-      "start": "node server.js"
-    },
-    "dependencies": {
-      "express": "^4.18.3"
-    }
+  "name": "car-web-app",
+  "version": "1.0.0",
+  "description": "Luxury Car Showcase Web App",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.6.0",
+    "vite": "^5.2.0"
   }
-  
+}

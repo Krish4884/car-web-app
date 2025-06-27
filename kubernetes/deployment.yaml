@@ -1,0 +1,35 @@
+# ~/car-web-app/kubernetes/deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: car-showcase-app-deployment
+  labels:
+    app: car-showcase-app
+spec:
+  replicas: 2 # You can start with 2 replicas for high availability
+  selector:
+    matchLabels:
+      app: car-showcase-app
+  template:
+    metadata:
+      labels:
+        app: car-showcase-app
+    spec:
+      containers:
+      - name: car-showcase-app-container
+        image: YOUR_ECR_REPOSITORY_URL/car-web-app:latest # REPLACE THIS WITH YOUR ECR IMAGE URL
+        ports:
+        - containerPort: 3000 # Your Node.js Express app typically runs on port 3000
+        livenessProbe: # Checks if the app is still running
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe: # Checks if the app is ready to serve traffic
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10

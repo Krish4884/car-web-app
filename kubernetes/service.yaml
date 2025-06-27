@@ -1,0 +1,16 @@
+# ~/car-web-app/kubernetes/service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: car-showcase-app-service
+  labels:
+    app: car-showcase-app
+spec:
+  selector:
+    app: car-showcase-app
+  ports:
+    - protocol: TCP
+      port: 80 # Port where the service will be exposed (e.g., standard HTTP port)
+      targetPort: 3000 # The port your Node.js app is listening on inside the container
+  type: LoadBalancer # Use LoadBalancer to expose your service externally on AWS EKS
