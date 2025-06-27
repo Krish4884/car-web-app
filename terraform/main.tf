@@ -135,3 +135,66 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy_attach_cni" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.eks_node_role.name
 }
+# terraform/main.tf (append this to your existing content)
+
+# --- EKS Cluster ---
+
+resource "aws_eks_cluster" "main" {
+  name     = "${var.project_name}-cluster"
+  role_arn = aws_iam_role.eks_cluster_role.arn
+  version  = "1.28" # Specify your desired Kubernetes version (e.g., "1.28", "1.29")
+
+  vpc_config {
+    subnet_ids         = concat(aws_subnet.public.*.id, aws_subnet.private.*.id)
+    endpoint_private_access = true
+    endpoint_public_access  = true
+    public_access_cidrs = ["0.0.0.0/0"] # Be cautious: this allows public access from anywhere. Restrict in production.
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_cluster_policy_attach
+  ]
+
+  tags = {
+    Name = "${var.project_name}-eks-cluster"
+  }
+}
+
+# --- EKS Node Group ---
+
+resource "aws_eks_node_group" "main" {
+  cluster_name    = aws_eks_cluster.main.name
+  node_group_name = "${var.project_name}-node-group"
+  node_role_arn   = aws_iam_role.eks_node_role.arn
+  subnet_ids      = aws_subnet.private.*.id # Typically, worker nodes are in private subnets
+
+  capacity_type  = "ON_DEMAND"
+  instance_types = ["t3.medium"] # Choose an instance type that fits your needs
+  desired_size   = 2             # Number of worker nodes
+  max_size       = 3
+  min_size       = 1
+
+  ami_type       = "AL2_x86_64" # Amazon Linux 2 (recommended for EKS)
+
+  scaling_config {
+    desired_size = 2
+    max_size     = 3
+    min_size     = 1
+  }
+
+  update_config {
+    max_unavailable = 1
+  }
+
+  # Ensure that IAM Role permissions are created before and attached to the EKS Node Group.
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_node_policy_attach_worker,
+    aws_iam_role_policy_attachment.eks_node_policy_attach_ecr,
+    aws_iam_role_policy_attachment.eks_node_policy_attach_cni,
+  ]
+
+  tags = {
+    Name = "${var.project_name}-eks-node-group"
+    "kubernetes.io/cluster/${aws_eks_cluster.main.name}" = "owned" # Required for cluster auto-scaling
+  }
+}
