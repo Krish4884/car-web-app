@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: car-showcase-app-container
-        image: YOUR_ECR_REPOSITORY_URL/car-web-app:latest # REPLACE THIS WITH YOUR ECR IMAGE URL
+        image: 084828567677.dkr.ecr.ap-south-1.amazonaws.com/car-web-app:latest
         ports:
         - containerPort: 3000 # Your Node.js Express app typically runs on port 3000
         livenessProbe: # Checks if the app is still running
