@@ -1,25 +1,30 @@
-name: Deploy to EC2
+name: Deploy to EC2 via SSH
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   deploy:
+    name: Deploy App to EC2
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd ~/car-web-app
-            git pull origin main
-            npm install
-            pm2 restart all || pm2 start server.js --name car-showcase
+    - name: SSH Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          export CI=true
+          cd ~/car-web-app
+          git config pull.rebase false
+          git pull origin main
+          npm install
+          npm install -g pm2
+          pm2 restart all || pm2 start server.js --name car-showcase
