@@ -1,17 +1,28 @@
-const express = require("express");
-const path = require("path");
-
+const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = 3000;
 
-// Serve static files from "public"
-app.use(express.static(path.join(__dirname, "public")));
+// Import and register prom-client
+const client = require('prom-client');
+client.collectDefaultMetrics();
 
-// Fallback to index.html for unmatched routes (optional)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+// Optional: add a custom metric
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+app.get('/', (req, res) => {
+  httpRequestCounter.inc(); // Increment custom metric
+  res.send('Welcome to the Car Showcase App!');
 });
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
