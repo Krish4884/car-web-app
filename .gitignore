@@ -1,3 +1,4 @@
 node_modules/
 .terraform/
 amazon-cloudwatch-agent.deb
+amazon-cloudwatch-agent.deb
