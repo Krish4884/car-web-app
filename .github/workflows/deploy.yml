@@ -3,51 +3,43 @@ name: Deploy to EKS
 on:
   push:
     branches:
-      - main  # Change this if your main branch has a different name
+      - main
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    env:
-      ECR_IMAGE: krish010/car-showcase-app
-      IMAGE_TAG: v2
-
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and push Docker image
-      run: |
-        docker build -t $ECR_IMAGE:$IMAGE_TAG .
-        docker push $ECR_IMAGE:$IMAGE_TAG
+    - name: Checkout code
+      uses: actions/checkout@v3
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        region: ap-south-1
+        aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
       with:
-        version: 'v1.29.0'
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Update Kubeconfig
-      run: aws eks update-kubeconfig --name car-web-eks-fresh --region ap-south-1
+    - name: Build and push Docker image
+      run: |
+        docker build -t krish4884/car-showcase-app:latest .
+        docker push krish4884/car-showcase-app:latest
+
+    - name: Update kubeconfig
+      run: |
+        aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
 
     - name: Deploy to EKS
       run: |
-        kubectl apply -f k8s/deployment.yaml
-        kubectl apply -f k8s/service.yaml
-
+        kubectl apply -f ./kubernetes/deployment.yaml
+        kubectl apply -f ./kubernetes/service.yaml
